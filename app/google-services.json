@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "796623808237",
+    "firebase_url": "https://bazy-718c8.firebaseio.com",
+    "project_id": "bazy-718c8",
+    "storage_bucket": "bazy-718c8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796623808237:android:7623414c8d685a14",
+        "android_client_info": {
+          "package_name": "com.example.kulker.bazy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "796623808237-ej3jb6juo62qpi0oncth81fsna4lha1c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsaCNVEk-gsXib0q3ME0SBabb0ZSsKI0M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
