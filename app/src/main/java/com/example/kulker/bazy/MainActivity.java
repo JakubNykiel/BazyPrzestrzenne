@@ -1,11 +1,13 @@
 package com.example.kulker.bazy;
 
 import android.graphics.Color;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.Time;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -25,15 +27,21 @@ import com.esri.core.renderer.SimpleRenderer;
 import com.esri.core.symbol.SimpleFillSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static android.R.attr.y;
 
 public class MainActivity extends AppCompatActivity {
 
-    FirebaseDatabase database;
+    DatabaseReference mDatabase;
     RelativeLayout main;
     MapView mapView;
     Button start;
@@ -44,12 +52,13 @@ public class MainActivity extends AppCompatActivity {
     TextView pointData;
     TextView signalData;
     WifiManager wifiManager;
+    String node;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        database = FirebaseDatabase.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         main = (RelativeLayout)findViewById(R.id.activity_main);
         mapView = (MapView)main.findViewById(R.id.map);
         pointData = (TextView)main.findViewById(R.id.pointData);
@@ -87,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSingleTap(float v, float v1) {
                 AddMarkerToMap(v,v1);
+                StartFirebaseNode();
             }
         });
     }
@@ -125,21 +135,37 @@ public class MainActivity extends AppCompatActivity {
         Point p = ConvertPoint(point);
         String tmp = "Lng: "+p.getX()+", Lat: "+p.getY();
         pointData.setText(tmp);
-        String tmp2 = "Signal: "+GetSignalStrength();
-        signalData.setText(tmp2);
+        Map<String,Integer> s = GetSignalStrength();
+        AddPointToNode(p,s);
+        //signalData.setText();
     }
 
     private Point ConvertPoint(Point point){
-        SpatialReference srFrom = mapView.getSpatialReference();
+        SpatialReference srFrom = SpatialReference.create(2180);
         SpatialReference srTo = SpatialReference.create(4269); //WGS84
         return (Point) GeometryEngine.project(point,srFrom,srTo);
     }
 
-    private int GetSignalStrength(){
-        int numberOfLevels = 5;
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        int level = WifiManager.calculateSignalLevel(wifiInfo.getRssi(), numberOfLevels);
-        return level;
+    private Map<String,Integer> GetSignalStrength(){
+        List<ScanResult> wifiList = wifiManager.getScanResults();
+        Map<String, Integer> strenght = new HashMap<String, Integer>();
+        for (int i = 0; i < wifiList.size(); i++) {
+            ScanResult scanResult = wifiList.get(i);
+            strenght.put(scanResult.BSSID,scanResult.level);
+        }
+        return strenght;
+   }
+
+    private void StartFirebaseNode(){
+
+        Time now = new Time();
+        now.setToNow();
+        
+        mDatabase.setValue(now);
+    }
+
+    private void AddPointToNode(Point point, Map<String,Integer> strength){
+
     }
 }
 
