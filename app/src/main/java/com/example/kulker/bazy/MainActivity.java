@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout main;
     MapView mapView;
     Button start;
+    Button stop;
     ShapefileFeatureTable shapefileFeatureTable;
     FeatureLayer featureLayer;
     GraphicsLayer graphicsLayer = new GraphicsLayer();
@@ -48,9 +49,15 @@ public class MainActivity extends AppCompatActivity {
         main = (RelativeLayout)findViewById(R.id.activity_main);
         mapView = (MapView)main.findViewById(R.id.map);
         pointData = (TextView)main.findViewById(R.id.pointData);
-
+        stop = (Button)main.findViewById(R.id.stopBtn);
         LoadFile();
 
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,6 +81,10 @@ public class MainActivity extends AppCompatActivity {
                 AddMarkerToMap(v,v1);
             }
         });
+    }
+
+    private void StopButtonListnerMethod(){
+        mapView.setOnSingleTapListener(null);
     }
 
     private void AddMarkerToMap(float v, float v1){
