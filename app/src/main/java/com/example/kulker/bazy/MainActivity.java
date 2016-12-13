@@ -1,6 +1,8 @@
 package com.example.kulker.bazy;
 
 import android.graphics.Color;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     FeatureLayer featureLayer;
     GraphicsLayer graphicsLayer = new GraphicsLayer();
     TextView pointData;
+    TextView signalData;
+    WifiManager wifiManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +54,11 @@ public class MainActivity extends AppCompatActivity {
         mapView = (MapView)main.findViewById(R.id.map);
         pointData = (TextView)main.findViewById(R.id.pointData);
         stop = (Button)main.findViewById(R.id.stopBtn);
+        signalData = (TextView)main.findViewById(R.id.signalData);
         LoadFile();
+
+        wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
+
 
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +92,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void StopButtonListnerMethod(){
-        mapView.setOnSingleTapListener(null);
+        mapView.setOnSingleTapListener(new OnSingleTapListener() {
+            @Override
+            public void onSingleTap(float v, float v1) {
+            }
+        });
     }
 
     private void AddMarkerToMap(float v, float v1){
@@ -93,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         Point pointGeometry = mapView.toMapPoint(v,v1);
         Graphic pointGraphic = new Graphic(pointGeometry, simpleMarker);
         graphicsLayer.addGraphic(pointGraphic);
-        PringPointData(new Point(v,v1));
+        PrintPointData(pointGeometry);
     }
 
     private void LoadFile(){
@@ -109,19 +121,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void PringPointData(Point point){
-
+    private void PrintPointData(Point point){
         Point p = ConvertPoint(point);
-        String tmp = "X: "+p.getX()+", Y: "+p.getY();
+        String tmp = "Lng: "+p.getX()+", Lat: "+p.getY();
         pointData.setText(tmp);
+        String tmp2 = "Signal: "+GetSignalStrength();
+        signalData.setText(tmp2);
     }
 
     private Point ConvertPoint(Point point){
-
         SpatialReference srFrom = mapView.getSpatialReference();
-        SpatialReference srTo = SpatialReference.create(3857); //WGS84
-        return (Point) GeometryEngine.project(point, srTo, srFrom);
-        //return (Point) GeometryEngine.project(point.getX(), point.getY(),srFrom);
+        SpatialReference srTo = SpatialReference.create(4269); //WGS84
+        return (Point) GeometryEngine.project(point,srFrom,srTo);
+    }
+
+    private int GetSignalStrength(){
+        int numberOfLevels = 5;
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        int level = WifiManager.calculateSignalLevel(wifiInfo.getRssi(), numberOfLevels);
+        return level;
     }
 }
 

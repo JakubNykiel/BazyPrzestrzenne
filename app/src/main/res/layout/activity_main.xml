@@ -31,10 +31,15 @@
     <TextView
         android:text=""
         android:layout_width="fill_parent"
-        android:layout_height="30dp"
+        android:layout_height="25dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:id="@+id/pointData" />
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="25dp"
+        android:layout_below="@id/startBtn"
+        android:id="@+id/signalData"/>
 
     <Button
         android:text="STOP"
