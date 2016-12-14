@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -31,6 +32,8 @@ import com.google.firebase.database.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -42,6 +45,7 @@ import static android.R.attr.y;
 public class MainActivity extends AppCompatActivity {
 
     DatabaseReference mDatabase;
+    DatabaseReference currentPoint;
     RelativeLayout main;
     MapView mapView;
     Button start;
@@ -64,10 +68,10 @@ public class MainActivity extends AppCompatActivity {
         pointData = (TextView)main.findViewById(R.id.pointData);
         stop = (Button)main.findViewById(R.id.stopBtn);
         signalData = (TextView)main.findViewById(R.id.signalData);
+        signalData.setMovementMethod(new ScrollingMovementMethod());
         LoadFile();
 
         wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
-
 
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                StartFirebaseNode();
                 StartButtonListnerMethod();
             }
         });
@@ -96,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSingleTap(float v, float v1) {
                 AddMarkerToMap(v,v1);
-                StartFirebaseNode();
             }
         });
     }
@@ -133,11 +137,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void PrintPointData(Point point){
         Point p = ConvertPoint(point);
-        String tmp = "Lng: "+p.getX()+", Lat: "+p.getY();
+        String tmp = "Lng: "+p.getX()+" Lat: "+p.getY();
         pointData.setText(tmp);
         Map<String,Integer> s = GetSignalStrength();
         AddPointToNode(p,s);
-        //signalData.setText();
     }
 
     private Point ConvertPoint(Point point){
@@ -151,21 +154,24 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Integer> strenght = new HashMap<String, Integer>();
         for (int i = 0; i < wifiList.size(); i++) {
             ScanResult scanResult = wifiList.get(i);
-            strenght.put(scanResult.BSSID,scanResult.level);
+            strenght.put(scanResult.SSID,scanResult.level);
+            signalData.append(scanResult.SSID+":"+scanResult.level+"\n");
         }
         return strenght;
    }
 
     private void StartFirebaseNode(){
-
-        Time now = new Time();
-        now.setToNow();
-        
-        mDatabase.setValue(now);
+        SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
+        Date myDate = new Date();
+        node = timeStampFormat.format(myDate);
+        mDatabase.child(node).setValue("");
     }
 
     private void AddPointToNode(Point point, Map<String,Integer> strength){
-
+        currentPoint = mDatabase.child(node).push();
+        currentPoint.child("Lat").setValue(point.getY());
+        currentPoint.child("Lng").setValue(point.getX());
+        currentPoint.child("WiFi").setValue(strength);
     }
 }
 

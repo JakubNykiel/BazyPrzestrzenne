@@ -28,19 +28,6 @@
         android:layout_marginTop="16dp"
         android:id="@+id/startBtn" />
 
-    <TextView
-        android:text=""
-        android:layout_width="fill_parent"
-        android:layout_height="25dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/pointData" />
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="25dp"
-        android:layout_below="@id/startBtn"
-        android:id="@+id/signalData"/>
-
     <Button
         android:text="STOP"
         android:layout_width="wrap_content"
@@ -52,5 +39,20 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp" />
+
+    <TextView
+        android:id="@+id/pointData"
+        android:scrollbars = "vertical"
+        android:layout_below="@+id/startBtn"
+        android:layout_alignParentStart="true"
+        android:layout_width="150dp"
+        android:layout_height="75dp" />
+
+    <TextView
+        android:id="@+id/signalData"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/stopBtn"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
